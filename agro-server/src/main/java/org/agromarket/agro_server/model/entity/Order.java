@@ -36,6 +36,10 @@ public class Order extends BaseEntity {
   @NotNull(message = "Shipping address cannot be null")
   private String shippingAddress;
 
+  @Column(length = 255)
+  @Size(max = 255, message = "Note must be less than or equal to 255 characters")
+  private String note;
+
   @Column(nullable = false)
   @Min(value = 0, message = "Total amount can not be less than 0!")
   private double totalAmount;

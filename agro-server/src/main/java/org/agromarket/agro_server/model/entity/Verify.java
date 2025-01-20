@@ -21,7 +21,9 @@ public class Verify extends BaseEntity {
   private String code;
   private LocalDateTime expireAt; // thời gian hết hạn
 
-  @ManyToOne
-  @JoinColumn(name = "user_id")
+  @OneToOne
+  @JoinColumn(name = "user_id", nullable = false, unique = true)
   private User user;
+
+  private Boolean isRevoked = false;
 }
