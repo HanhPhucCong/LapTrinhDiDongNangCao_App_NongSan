@@ -33,8 +33,11 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
-            request ->
-                request.requestMatchers("/api/v1/auth/**").permitAll().anyRequest().authenticated())
+            request -> request
+                    .requestMatchers("/api/v1/auth/**").permitAll()
+                    .requestMatchers("/admin/**").permitAll() //Để tạm để khỏi xác nhận token cho admin
+                    .anyRequest().authenticated())
+
         .sessionManagement(
             manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling( // CustomAuthenticationEntryPoint được dùng tại đây
