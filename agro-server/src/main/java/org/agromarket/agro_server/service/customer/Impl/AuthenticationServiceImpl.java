@@ -239,7 +239,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       existingVerify.setExpireAt(
           ZonedDateTime.now().plusMinutes(appConfig.getVerifyExpireTime()).toLocalDateTime());
       existingVerify.setIsRevoked(false);
-      verifyRepository.save(existingVerify); // Cập nhật lại Verify trong DB
+      verifyRepository.save(existingVerify);
     } else {
       // Nếu chưa có Verify, tạo mới Verify
       Verify newVerify = new Verify();
@@ -247,9 +247,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       newVerify.setExpireAt(
           ZonedDateTime.now().plusMinutes(appConfig.getVerifyExpireTime()).toLocalDateTime());
       newVerify.setIsRevoked(false);
-      newVerify.setUser(user); // Liên kết Verify với User
-      verifyRepository.save(newVerify); // Lưu Verify mới
-      user.setVerify(newVerify); // Cập nhật Verify cho User nếu chưa có
+      newVerify.setUser(user);
+      verifyRepository.save(newVerify);
+      user.setVerify(newVerify);
     }
 
     // Gửi OTP qua email
@@ -261,10 +261,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       throw new RuntimeException("Error sending verification email. Please try again later.", e);
     }
 
-    // Lưu lại User nếu có thay đổi (ví dụ: nếu có thay đổi Verify)
     userRepository.save(user);
 
-    // Tạo response chứa thông tin Verify, kiểm tra nếu Verify tồn tại
     VerifyResponse verifyResponse = null;
     if (user.getVerify() != null) {
       verifyResponse =
