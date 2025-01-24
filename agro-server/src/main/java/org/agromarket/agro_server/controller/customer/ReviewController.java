@@ -18,7 +18,7 @@ public class ReviewController {
   private final ReviewService reviewService;
 
   @PreAuthorize("hasAnyAuthority('ADMIN', 'CUSTOMER')")
-  @PostMapping("/create/{productId}")
+  @PostMapping("/product/{productId}")
   public ResponseEntity<BaseResponse> createReview(
       @PathVariable("productId") long productId, @RequestBody @Valid ReviewRequest request) {
     return ResponseEntity.ok(
@@ -55,7 +55,7 @@ public class ReviewController {
   }
 
   @PreAuthorize("hasAnyAuthority('ADMIN', 'CUSTOMER')")
-  @PatchMapping("/softDelete/{reviewId}")
+  @PatchMapping("/soft-delete/{reviewId}")
   public ResponseEntity<BaseResponse> softDelete(@PathVariable("reviewId") long reviewId) {
     boolean newIsDeleted = true;
     return ResponseEntity.ok(
