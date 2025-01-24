@@ -3,10 +3,7 @@ package org.agromarket.agro_server.controller.customer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.agromarket.agro_server.common.BaseResponse;
-import org.agromarket.agro_server.model.dto.request.RefreshTokenRequest;
-import org.agromarket.agro_server.model.dto.request.SigninRequest;
-import org.agromarket.agro_server.model.dto.request.SignupRequest;
-import org.agromarket.agro_server.model.dto.request.VerifyRequest;
+import org.agromarket.agro_server.model.dto.request.*;
 import org.agromarket.agro_server.model.dto.response.JwtAuthenticationResponse;
 import org.agromarket.agro_server.service.customer.AuthenticationService;
 import org.springframework.http.HttpStatus;
@@ -48,9 +45,29 @@ public class AuthenticationController {
     return ResponseEntity.ok(authenticationService.signin(signinRequest));
   }
 
+  // refresh token
   @PostMapping("/refresh")
   public ResponseEntity<JwtAuthenticationResponse> refresh(
       @RequestBody RefreshTokenRequest refreshTokenRequest) {
     return ResponseEntity.ok(authenticationService.refreshToken(refreshTokenRequest));
+  }
+
+  // get OTP (change/forgotPassword)
+  @PostMapping("/get-verify")
+  public ResponseEntity<BaseResponse> sendVerifyRequest(
+      @Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+    return authenticationService.sendVerifyRequest(forgotPasswordRequest);
+  }
+
+  @PatchMapping("/renew-password/{userId}")
+  public ResponseEntity<BaseResponse> renewPassword(
+      @PathVariable("userId") long userId,
+      @Valid @RequestBody RenewPasswordRequest renewPasswordRequest) {
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(
+            new BaseResponse(
+                "Password changed successfully.",
+                HttpStatus.OK.value(),
+                authenticationService.renewPassword(userId, renewPasswordRequest)));
   }
 }

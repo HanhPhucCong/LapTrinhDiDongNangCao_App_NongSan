@@ -43,4 +43,14 @@ public class MailServiceImpl implements MailService {
     context.setVariable("VerifyCode", verifyCode);
     sendEmail(toEmail, "Agriculture Market - Verification code", templateFile, context);
   }
+
+  @Override
+  public void sendPasswordRecoveryMail(
+      String toEmail, String userName, String verifyCode, String templateFile) {
+    Context context = new Context();
+    context.setVariable("UserName", userName);
+    context.setVariable("ToEmail", toEmail);
+    context.setVariable("VerifyCode", verifyCode);
+    sendEmail(toEmail, "Agriculture Market - Password Recovery", templateFile, context);
+  }
 }

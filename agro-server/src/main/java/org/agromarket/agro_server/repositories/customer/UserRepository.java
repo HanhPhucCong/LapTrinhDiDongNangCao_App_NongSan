@@ -19,4 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   @Query("SELECT v FROM Verify v WHERE v.user.id = :userId AND v.isRevoked = true")
   public List<Verify> getAllRevokedVerify(long userId);
+
+  public Optional<User> getUserByEmail(String email);
 }
