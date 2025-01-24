@@ -11,9 +11,9 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public abstract class BaseResponseDTO {
-    private String id;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private Boolean isActive;
-    private Boolean isDeleted;
+  private Long id;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
+  private Boolean isActive;
+  private Boolean isDeleted;
 }

@@ -1,6 +1,7 @@
 package org.agromarket.agro_server.config;
 
 import lombok.RequiredArgsConstructor;
+import org.agromarket.agro_server.component.CustomAccessDeniedHandler;
 import org.agromarket.agro_server.component.CustomAuthenticationEntryPoint;
 import org.agromarket.agro_server.component.JwtAuthenticationFilter;
 import org.agromarket.agro_server.service.customer.UserService;
@@ -28,20 +29,27 @@ public class SecurityConfiguration {
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final UserService userService;
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+  private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
-            request -> request
-                    .requestMatchers("/api/v1/auth/**").permitAll()
-                    .requestMatchers("/admin/**").permitAll() //Để tạm để khỏi xác nhận token cho admin
-                    .anyRequest().authenticated())
-
+            request ->
+                request
+                    .requestMatchers("/api/v1/auth/**")
+                    .permitAll()
+                    .requestMatchers("/admin/**")
+                    .permitAll() // Để tạm để khỏi xác nhận token cho admin
+                    .anyRequest()
+                    .authenticated())
         .sessionManagement(
             manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .exceptionHandling( // CustomAuthenticationEntryPoint được dùng tại đây
-            exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint))
+        .exceptionHandling(
+            exception ->
+                exception
+                    .authenticationEntryPoint(customAuthenticationEntryPoint) // Xử lý 401
+                    .accessDeniedHandler(customAccessDeniedHandler)) // Xử lý 403
         .authenticationProvider(authenticationProvider())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();

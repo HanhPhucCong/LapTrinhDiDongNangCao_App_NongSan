@@ -10,7 +10,6 @@ import org.agromarket.agro_server.common.Role;
 @Builder
 @EqualsAndHashCode(callSuper = false)
 public class UserResponse extends BaseResponseDTO {
-  private String id;
   private String fullName;
   private String email;
   private String password;
