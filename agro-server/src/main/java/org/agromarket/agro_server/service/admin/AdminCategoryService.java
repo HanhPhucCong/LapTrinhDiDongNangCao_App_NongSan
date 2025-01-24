@@ -1,11 +1,14 @@
 package org.agromarket.agro_server.service.admin;
+import org.agromarket.agro_server.mapper.ProductMapper;
 import org.agromarket.agro_server.model.entity.Category;
 import org.agromarket.agro_server.repositories.admin.AdminCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.agromarket.agro_server.model.dto.admin.CategoryDTO;
+import org.agromarket.agro_server.mapper.CategoryMapper;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminCategoryService {
@@ -50,11 +53,17 @@ public class AdminCategoryService {
             throw new IllegalStateException("Category with ID " + id + " is not deleted.");
         }
     }
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAllActiveCategories();
+    public List<CategoryDTO> getAllCategories() {
+        return categoryRepository.findAllActiveCategories()
+                .stream()
+                .map(CategoryMapper::toCategoryDTO)
+                .collect(Collectors.toList());
     }
 
-    public List<Category> getAllDeletedCategories() {
-        return categoryRepository.findAllDeletedCategories();
+    public List<CategoryDTO> getAllDeletedCategories() {
+        return categoryRepository.findAllDeletedCategories()
+                .stream()
+                .map(CategoryMapper::toCategoryDTO)
+                .collect(Collectors.toList());
     }
 }

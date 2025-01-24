@@ -1,5 +1,6 @@
 package org.agromarket.agro_server.controller.admin;
 
+import org.agromarket.agro_server.model.dto.admin.CategoryDTO;
 import org.agromarket.agro_server.model.entity.Category;
 import org.agromarket.agro_server.service.admin.AdminCategoryService;
 import org.springframework.http.ResponseEntity;
@@ -40,12 +41,12 @@ public class AdminCategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         return ResponseEntity.ok(adminCategoryService.getAllCategories());
     }
 
     @GetMapping("/deleted")
-    public ResponseEntity<List<Category>> getAllDeletedCategories() {
+    public ResponseEntity<List<CategoryDTO>> getAllDeletedCategories() {
         return ResponseEntity.ok(adminCategoryService.getAllDeletedCategories());
     }
 }
