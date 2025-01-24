@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.agromarket.agro_server.model.enums.Unit;
 
 @Entity
 @Table(name = "products")
@@ -35,7 +37,8 @@ public class Product extends BaseEntity {
   @Max(value = 100000000, message = "Price must be less than or equal to 100,000,000")
   private Double price = 0.0;
 
-  private String image;
+  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ProductImage> images = new ArrayList<>();
 
   @Column(nullable = false)
   @NotNull(message = "Product quantity cannot be null")
@@ -43,11 +46,28 @@ public class Product extends BaseEntity {
   @Max(value = 100000, message = "Quantity must be less than or equal to 100000")
   private long quantity;
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  @NotNull(message = "Product unit cannot be null")
+  private Unit unit;
+
   @ManyToOne
-  @JoinColumn(name = "category_id")
+  @JoinColumn(name = "category_id", nullable = false)
   @NotNull(message = "Product category cannot be null")
   private Category category;
 
   @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Review> reviews;
+  private List<Review> reviews = new ArrayList<>();
+
+  public void addImage(ProductImage image) {
+    images.add(image);
+    image.setProduct(this);
+  }
+
+  public void clearImages() {
+    for (ProductImage image : images) {
+      image.setProduct(null);
+    }
+    images.clear();
+  }
 }
