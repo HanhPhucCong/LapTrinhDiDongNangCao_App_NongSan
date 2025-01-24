@@ -15,6 +15,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<BaseResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+    log.error("IllegalArgumentException: ", ex);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(new BaseResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), ""));
+  }
+
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<BaseResponse> handleHttpMessageNotReadable(
       HttpMessageNotReadableException ex) {

@@ -1,6 +1,8 @@
 package org.agromarket.agro_server.service.customer.Impl;
 
 import lombok.RequiredArgsConstructor;
+import org.agromarket.agro_server.exception.NotFoundException;
+import org.agromarket.agro_server.model.entity.User;
 import org.agromarket.agro_server.repositories.customer.UserRepository;
 import org.agromarket.agro_server.service.customer.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,5 +26,12 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
       }
     };
+  }
+
+  @Override
+  public User getUserByEmail(String email) {
+    return userRepository
+        .getUserByEmail(email)
+        .orElseThrow(() -> new NotFoundException("User not found with email: " + email));
   }
 }

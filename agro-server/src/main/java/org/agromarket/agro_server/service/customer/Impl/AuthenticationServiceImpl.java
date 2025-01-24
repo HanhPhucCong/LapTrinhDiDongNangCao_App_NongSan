@@ -6,25 +6,26 @@ import java.util.HashMap;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.agromarket.agro_server.common.BaseResponse;
 import org.agromarket.agro_server.common.Role;
 import org.agromarket.agro_server.config.AppConfiguration;
 import org.agromarket.agro_server.exception.CustomException;
 import org.agromarket.agro_server.exception.NotFoundException;
-import org.agromarket.agro_server.model.dto.request.RefreshTokenRequest;
-import org.agromarket.agro_server.model.dto.request.SigninRequest;
-import org.agromarket.agro_server.model.dto.request.SignupRequest;
-import org.agromarket.agro_server.model.dto.request.VerifyRequest;
+import org.agromarket.agro_server.model.dto.request.*;
 import org.agromarket.agro_server.model.dto.response.JwtAuthenticationResponse;
 import org.agromarket.agro_server.model.dto.response.UserResponse;
 import org.agromarket.agro_server.model.dto.response.VerifyResponse;
 import org.agromarket.agro_server.model.entity.User;
 import org.agromarket.agro_server.model.entity.Verify;
 import org.agromarket.agro_server.repositories.customer.UserRepository;
+import org.agromarket.agro_server.repositories.customer.VerifyRepository;
 import org.agromarket.agro_server.service.customer.AuthenticationService;
 import org.agromarket.agro_server.service.customer.JwtService;
 import org.agromarket.agro_server.service.customer.MailService;
+import org.agromarket.agro_server.service.customer.UserService;
 import org.agromarket.agro_server.util.mapper.UserMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -44,6 +45,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   private final AppConfiguration appConfig;
   private final MailService mailService;
   private final UserMapper userMapper;
+  private final UserService userService;
+  private final VerifyRepository verifyRepository;
 
   private boolean checkMatchPassword(String password, String passwordConfirm) {
     if (!password.equals(passwordConfirm)) {
@@ -206,5 +209,120 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       return jwtAuthenticationResponse;
     }
     return null;
+  }
+
+  @Transactional
+  @Override
+  public ResponseEntity<BaseResponse> sendVerifyRequest(
+      ForgotPasswordRequest forgotPasswordRequest) {
+    User user = userService.getUserByEmail(forgotPasswordRequest.getEmail());
+    if (user == null) {
+      throw new CustomException("No user found with this email!", HttpStatus.NOT_FOUND.value());
+    }
+
+    // Kiểm tra xem user này có email được xác thực chưa
+    boolean isVerified = user.getIsEmailVerified();
+    String message;
+    if (isVerified) {
+      message = "The password recovery code has been sent to the email: " + user.getEmail();
+    } else {
+      message = "The verification code has been sent to the email: " + user.getEmail();
+    }
+
+    // Tạo mã xác thực
+    String verifyCode = getVerifyCode();
+    Verify existingVerify = user.getVerify();
+
+    if (existingVerify != null) {
+      // Nếu đã có Verify liên kết với User, cập nhật lại thông tin
+      existingVerify.setCode(BCrypt.hashpw(verifyCode, BCrypt.gensalt(appConfig.getLogRounds())));
+      existingVerify.setExpireAt(
+          ZonedDateTime.now().plusMinutes(appConfig.getVerifyExpireTime()).toLocalDateTime());
+      existingVerify.setIsRevoked(false);
+      verifyRepository.save(existingVerify); // Cập nhật lại Verify trong DB
+    } else {
+      // Nếu chưa có Verify, tạo mới Verify
+      Verify newVerify = new Verify();
+      newVerify.setCode(BCrypt.hashpw(verifyCode, BCrypt.gensalt(appConfig.getLogRounds())));
+      newVerify.setExpireAt(
+          ZonedDateTime.now().plusMinutes(appConfig.getVerifyExpireTime()).toLocalDateTime());
+      newVerify.setIsRevoked(false);
+      newVerify.setUser(user); // Liên kết Verify với User
+      verifyRepository.save(newVerify); // Lưu Verify mới
+      user.setVerify(newVerify); // Cập nhật Verify cho User nếu chưa có
+    }
+
+    // Gửi OTP qua email
+    try {
+      mailService.sendPasswordRecoveryMail(
+          user.getEmail(), user.getFullName(), verifyCode, "ForgotPwRequestTemplate");
+    } catch (Exception e) {
+      log.error("Error when sending verification email to user: " + user.getEmail(), e);
+      throw new RuntimeException("Error sending verification email. Please try again later.", e);
+    }
+
+    // Lưu lại User nếu có thay đổi (ví dụ: nếu có thay đổi Verify)
+    userRepository.save(user);
+
+    // Tạo response chứa thông tin Verify, kiểm tra nếu Verify tồn tại
+    VerifyResponse verifyResponse = null;
+    if (user.getVerify() != null) {
+      verifyResponse =
+          VerifyResponse.builder()
+              .id(user.getId())
+              .expiredAt(user.getVerify().getExpireAt())
+              .build();
+    }
+
+    log.info("Send verify request successfully! UserId: " + user.getId());
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(new BaseResponse(message, HttpStatus.OK.value(), verifyResponse));
+  }
+
+  @Override
+  public UserResponse renewPassword(long userId, RenewPasswordRequest renewPasswordRequest) {
+    User user =
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
+
+    // kiểm tra xem có mã xác thực không
+    if (user.getVerify() == null) {
+      throw new NotFoundException("The verification code does not exist.");
+    }
+
+    // kiểm tra mã xác thực hết hạn chưa
+    if (user.getVerify().getExpireAt().isBefore(LocalDateTime.now())) {
+      log.error("Verify code is expired: " + user.getEmail());
+      user.setVerify(null); // Xóa mã xác thực đã hết hạn
+      userRepository.save(user);
+      throw new CustomException(
+          "The verification code has expired!", HttpStatus.UNAUTHORIZED.value());
+    }
+
+    // check mã khôi phục
+    if (!BCrypt.checkpw(renewPasswordRequest.getResetPasswordCode(), user.getVerify().getCode())) {
+      log.warn(" code: " + renewPasswordRequest.getResetPasswordCode());
+      log.warn("user code: " + user.getVerify().getCode());
+
+      log.error("Verify code is incorrect: " + user.getEmail());
+      throw new CustomException(
+          "The verification code is incorrect.", HttpStatus.BAD_REQUEST.value());
+    }
+
+    // check mật khẩu và xác nhận mật khẩu
+    if (!checkMatchPassword(
+        renewPasswordRequest.getPassword(), renewPasswordRequest.getComfirmPassword())) {
+      throw new IllegalArgumentException("Password and confirmation password do not match.");
+    }
+
+    // pass, tạo mật khẩu mới
+    user.setPassword(passwordEncoder.encode(renewPasswordRequest.getPassword()));
+    user.setVerify(null);
+    user.setIsEmailVerified(true);
+    userRepository.save(user);
+
+    log.info("Change password succesfully! UserId: " + user.getId());
+
+    return userMapper.convertToResponse(user);
   }
 }
