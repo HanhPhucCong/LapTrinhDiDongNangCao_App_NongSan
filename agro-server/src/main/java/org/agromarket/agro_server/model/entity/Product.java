@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.agromarket.agro_server.model.enums.Unit;
+import org.agromarket.agro_server.common.Unit;
 
 @Entity
 @Table(name = "products")
