@@ -1,4 +1,4 @@
-package org.agromarket.agro_server.model.enums;
+package org.agromarket.agro_server.common;
 
 public enum Unit {
     PIECE,     // Quả
