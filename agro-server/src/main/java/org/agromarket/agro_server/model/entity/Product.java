@@ -1,5 +1,6 @@
 package org.agromarket.agro_server.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -54,6 +55,7 @@ public class Product extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "category_id", nullable = false)
   @NotNull(message = "Product category cannot be null")
+  @JsonIgnore
   private Category category;
 
   @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
