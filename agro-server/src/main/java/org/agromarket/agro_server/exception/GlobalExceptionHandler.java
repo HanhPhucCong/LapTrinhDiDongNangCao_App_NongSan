@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.agromarket.agro_server.common.BaseResponse;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -14,6 +15,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+  @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+  public ResponseEntity<BaseResponse> handleInvalidDataAccess(
+      InvalidDataAccessApiUsageException ex) {
+    log.error("Invalid Data Access: ", ex);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(
+            new BaseResponse(
+                "Dữ liệu không hợp lệ. Vui lòng kiểm tra thông tin gửi lên.",
+                HttpStatus.BAD_REQUEST.value(),
+                "INVALID_DATA_ACCESS"));
+  }
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<BaseResponse> handleIllegalArgumentException(IllegalArgumentException ex) {

@@ -14,6 +14,6 @@ public class CustomException extends RuntimeException {
 
   @Override
   public String getMessage() {
-    return super.getMessage() + " (status code: " + statusCode + ")";
+    return super.getMessage();
   }
 }
