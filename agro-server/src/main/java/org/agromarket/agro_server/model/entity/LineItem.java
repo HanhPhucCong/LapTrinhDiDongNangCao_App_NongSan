@@ -1,5 +1,6 @@
 package org.agromarket.agro_server.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -23,6 +24,7 @@ public class LineItem extends BaseEntity {
   // nếu chưa thanh toán thì cột này có giá trị, cho order_id null
   @ManyToOne
   @JoinColumn(name = "cart_id")
+  @JsonIgnore
   private Cart cart;
 
   // nếu đã thanh toán thì cột này có giá trị, cho cart_id null
