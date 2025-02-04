@@ -210,4 +210,22 @@ public class CartServiceImpl implements CartService {
 
     return cartMapper.convertToResponse(cart);
   }
+
+  @Override
+  public Double totalPrice() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    User currUser = (User) authentication.getPrincipal();
+
+    Cart cart = cartRepository.findByUserId(currUser.getId());
+    if (cart == null) {
+      cart = new Cart();
+      cart.setUser(currUser);
+      currUser.setCart(cart);
+      cartRepository.save(cart);
+      return 0.0;
+    }
+    return cart.getLineItems().stream()
+        .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+        .sum();
+  }
 }
