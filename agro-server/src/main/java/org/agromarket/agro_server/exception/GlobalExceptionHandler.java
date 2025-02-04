@@ -16,6 +16,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(NullPointerException.class)
+  public ResponseEntity<BaseResponse> handleNullPointerException(NullPointerException ex) {
+    log.error("NullPointerException occurred: ", ex);
+
+    String errorMessage =
+        "Có vẻ như một số dữ liệu bị thiếu hoặc không hợp lệ. Vui lòng kiểm tra lại và thử lại.";
+
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(
+            new BaseResponse(
+                errorMessage, HttpStatus.INTERNAL_SERVER_ERROR.value(), "NULL_POINTER_EXCEPTION"));
+  }
+
   @ExceptionHandler(InvalidDataAccessApiUsageException.class)
   public ResponseEntity<BaseResponse> handleInvalidDataAccess(
       InvalidDataAccessApiUsageException ex) {
