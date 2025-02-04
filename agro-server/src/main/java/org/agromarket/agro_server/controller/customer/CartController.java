@@ -69,4 +69,11 @@ public class CartController {
     return ResponseEntity.ok(
         new BaseResponse("Clear cart successfully!", 200, cartService.clearCart()));
   }
+
+  @PreAuthorize("hasAnyAuthority('ADMIN', 'CUSTOMER')")
+  @GetMapping("/total-price")
+  public ResponseEntity<BaseResponse> totalPrice() {
+    return ResponseEntity.ok(
+        new BaseResponse("Get total price successfully!", 200, cartService.totalPrice()));
+  }
 }

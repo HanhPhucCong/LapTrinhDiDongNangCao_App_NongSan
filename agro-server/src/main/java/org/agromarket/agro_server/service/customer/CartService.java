@@ -11,9 +11,11 @@ public interface CartService {
 
   public CartResponse getCartByCurrenUser();
 
-  // x
+  // remove 1 item from Cart
   public CartResponse removeFromCart(long lineItemId);
 
   // clear all items
   public CartResponse clearCart();
+
+  public Double totalPrice();
 }
