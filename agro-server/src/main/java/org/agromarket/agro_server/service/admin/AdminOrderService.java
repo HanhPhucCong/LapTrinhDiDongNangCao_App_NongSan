@@ -14,7 +14,6 @@ public class AdminOrderService {
     @Autowired
     private AdminOrderRepository orderRepository;
 
-    // Có thể dùng mapper để lấy các loại thành phần cần thiết nếu muốn
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
