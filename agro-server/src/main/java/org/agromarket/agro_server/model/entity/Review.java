@@ -1,9 +1,7 @@
 package org.agromarket.agro_server.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,10 +26,10 @@ public class Review extends BaseEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
-  @Min(value = 0, message = "Rating must beetween 0 and 5!")
-  @Max(value = 5, message = "Rating must beetween 0 and 5!")
+  @DecimalMin(value = "1.0", inclusive = true, message = "Star rating must be at least {value}.")
+  @DecimalMax(value = "5.0", inclusive = true, message = "Star rating must be at most {value}.")
   @JoinColumn(nullable = false)
-  private int rating;
+  private Double rating;
 
   @Size(max = 255, message = "Comment must be less than or equal to 255 characters")
   @Column(length = 255)

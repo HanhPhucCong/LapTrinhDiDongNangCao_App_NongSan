@@ -1,10 +1,15 @@
 package org.agromarket.agro_server.model.entity;
 
 import jakarta.persistence.*;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import lombok.*;
 import org.agromarket.agro_server.common.Role;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "users")
@@ -13,7 +18,7 @@ import org.agromarket.agro_server.common.Role;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(callSuper = false)
-public class User extends BaseEntity {
+public class User extends BaseEntity implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
@@ -29,11 +34,14 @@ public class User extends BaseEntity {
 
   private String phoneNumber;
   private String address;
-  private ZonedDateTime dateOfBirth;
+  private LocalDateTime dateOfBirth;
   private String avatarUrl;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Verify> verifyList; // (OTP) mỗi lần gửi yêu cầu xác thực (signup/forgotPassword...)
+  private Boolean isEmailVerified = false; // trạng thái tài khoản đã được xác thực chưa
+
+  // (OTP) mỗi lần gửi yêu cầu xác thực (signup/forgotPassword...)
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Verify verify;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
@@ -43,8 +51,21 @@ public class User extends BaseEntity {
   private Cart cart;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Order> ordes;
+  private List<Order> ordes = new ArrayList<>();
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Review> reviews;
+  private List<Review> reviews = new ArrayList<>();
+
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Favorite favorite;
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of(new SimpleGrantedAuthority(role.name()));
+  }
+
+  @Override
+  public String getUsername() {
+    return email;
+  }
 }

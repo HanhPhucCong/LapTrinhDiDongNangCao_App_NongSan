@@ -2,6 +2,7 @@ package org.agromarket.agro_server.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,5 +26,5 @@ public class Cart extends BaseEntity {
   private User user;
 
   @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<LineItem> lineItems;
+  private List<LineItem> lineItems = new ArrayList<>();
 }
