@@ -102,19 +102,27 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   private void checkBeforePay(long userId, String lineItemIds) {
-    // 1. check co cart khong
+
+    // 1. check xem user nay co dang thanh toan don hang nao khong
+    // (mot user chi thanh toan duoc 1 Order cung luc)
+    List<Order> processingOrders = orderRepository.findByUserIdAndStatusPending(userId);
+    if (!processingOrders.isEmpty()) {
+      throw new CustomException("Current user is processing other Order!", 409);
+    }
+
+    // 2. check co cart khong
     Cart cart = cartRepository.findByUserId(userId);
     if (cart == null) {
       throw new NotFoundException("Cart not found with userId " + userId);
     }
 
-    // 2. check lineItems co trong cart khong
+    // 3. check lineItems co trong cart khong
     List<LineItem> lineItems = getLineItemsByIds(lineItemIds);
     for (LineItem lineItem : lineItems) {
       if (!cart.getLineItems().contains(lineItem)) {
-        throw new CustomException("Line item is not in cart!", 400);
+        throw new CustomException("Line item is not in cart!", 404);
       }
-      // 3. check san pham con khong
+      // 4. check san pham con khong
       if (lineItem.getQuantity() > lineItem.getProduct().getQuantity()) {
         String mesaage =
             lineItem.getProduct().getName() + " does not have enough quantity in stock!";

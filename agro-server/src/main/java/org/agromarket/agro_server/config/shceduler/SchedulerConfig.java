@@ -34,7 +34,7 @@ public class SchedulerConfig {
   @Transactional
   @Scheduled(fixedRate = 60000) // chay moi 1 phut
   public void checkPaymentStatus() {
-    LocalDateTime minutesAgo = LocalDateTime.now().minusMinutes(1);
+    LocalDateTime minutesAgo = LocalDateTime.now().minusMinutes(15);
 
     // lineItems pending > 15p
     List<LineItem> expiredLineItems = lineItemRepository.findExpiredLineItems(minutesAgo);

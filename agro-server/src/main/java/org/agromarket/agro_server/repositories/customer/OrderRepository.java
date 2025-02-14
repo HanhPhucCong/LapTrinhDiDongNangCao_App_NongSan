@@ -20,4 +20,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   @Query(
       "UPDATE Order o SET o.status = 'CANCELED', o.isDeleted = true WHERE o.status = 'PENDING' AND o.createdAt < :time")
   int markExpiredOrdersAsCanceled(@Param("time") LocalDateTime time);
+
+  @Query("SELECT o FROM Order  o WHERE o.status = 'PENDING' AND o.user.id = :userId")
+  List<Order> findByUserIdAndStatusPending(long userId);
 }
