@@ -23,4 +23,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
   @Query("SELECT o FROM Order  o WHERE o.status = 'PENDING' AND o.user.id = :userId")
   List<Order> findByUserIdAndStatusPending(long userId);
+
+  @Query(
+      "SELECT o FROM Order o WHERE o.user.id =:userId AND o.status = 'CONFIRMED' AND o.isActive=true AND o.isDeleted=false")
+  List<Order> getConfirmedByUserId(long userId);
+
+  @Query("SELECT o FROM Order o WHERE o.isDeleted = false")
+  List<Order> getAllNotDeleted();
 }
