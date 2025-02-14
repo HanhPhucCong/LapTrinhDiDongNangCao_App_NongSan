@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.agromarket.agro_server.common.BaseResponse;
 import org.agromarket.agro_server.exception.CustomException;
-import org.agromarket.agro_server.model.dto.request.PaymentRequest;
+import org.agromarket.agro_server.model.dto.request.CheckoutRequest;
 import org.agromarket.agro_server.service.customer.PaymentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +26,8 @@ public class PaymentController {
   @PreAuthorize("hasAnyAuthority('CUSTOMER', 'ADMIN')")
   @PostMapping("/payment/create-payment")
   public ResponseEntity<?> createPayment(
-      HttpServletRequest request, @RequestBody @Valid PaymentRequest vnPayRequest) {
-    return ResponseEntity.ok(paymentService.createPayment(request, vnPayRequest));
+      HttpServletRequest request, @RequestBody @Valid CheckoutRequest checkoutRequest) {
+    return ResponseEntity.ok(paymentService.createPayment(request, checkoutRequest));
   }
 
   // chưa có FE nên để /auth để không bị lỗi khi test bằng BE (vì trình duyêt khác nên ko có token)
@@ -41,21 +41,11 @@ public class PaymentController {
       throws IOException {
 
     if (responseCode.equals("00")) {
-      String[] orderInfoParts = orderInfo.split("\\.");
-      if (orderInfoParts.length != 2) {
-        throw new CustomException("Invalid order info format!", HttpStatus.BAD_REQUEST.value());
-      }
-
-      String userId = orderInfoParts[0];
-      String transactionType = orderInfoParts[1].toUpperCase();
-
-      log.info(userId);
-      log.info(transactionType);
-
+      paymentService.handlePaymentSuccess(orderInfo);
     } else {
       log.error("Payment with vnpay failed!");
       throw new CustomException("Payment failed", HttpStatus.BAD_REQUEST.value());
     }
-    return ResponseEntity.ok(new BaseResponse("Payment successfully", HttpStatus.OK.value(), ""));
+    return ResponseEntity.ok(new BaseResponse("Payment successfully!", HttpStatus.OK.value(), ""));
   }
 }

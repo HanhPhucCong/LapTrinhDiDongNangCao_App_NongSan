@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import lombok.*;
 import org.agromarket.agro_server.common.Role;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(callSuper = false)
 public class User extends BaseEntity implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,5 +67,10 @@ public class User extends BaseEntity implements UserDetails {
   @Override
   public String getUsername() {
     return email;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, email); // Chỉ dùng id và email, tránh vòng lặp
   }
 }

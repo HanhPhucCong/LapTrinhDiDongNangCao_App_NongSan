@@ -30,6 +30,7 @@ public class LineItem extends BaseEntity {
   // nếu đã thanh toán thì cột này có giá trị, cho cart_id null
   @ManyToOne
   @JoinColumn(name = "order_id")
+  @JsonIgnore
   private Order order;
 
   @ManyToOne
@@ -42,4 +43,8 @@ public class LineItem extends BaseEntity {
   @Min(value = 0, message = "Quantity must be equal/greater than 0")
   @Max(value = 1000, message = "Quantity must be less than or equal to 1000")
   private int quantity;
+
+  public double getPrice() {
+    return this.product.getPrice() * this.quantity;
+  }
 }
