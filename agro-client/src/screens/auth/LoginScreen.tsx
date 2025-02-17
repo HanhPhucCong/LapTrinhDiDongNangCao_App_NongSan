@@ -38,7 +38,7 @@ const LoginScreen = ({navigation}: any) => {
             />
           </SectionComponent>
           <SectionComponent>
-            <TextComponent size={24} title text="Sign in" />
+            <TextComponent size={24} title text="Login" />
             <SpaceComponent height={21} />
             <InputComponent
               value={email}
@@ -76,8 +76,8 @@ const LoginScreen = ({navigation}: any) => {
           <SpaceComponent height={16} />
           <SectionComponent>
             <ButtonComponent
-              disable={isDisable}
               text="SIGN IN"
+              onPress={() => navigation.replace('Main')}
               type="primary"
             />
           </SectionComponent>

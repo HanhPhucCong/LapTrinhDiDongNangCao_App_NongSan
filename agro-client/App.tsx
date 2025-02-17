@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import {SplashScreen} from './src/screens';
+import { SplashScreen } from './src/screens';
 import { NavigationContainer } from '@react-navigation/native';
 import AuthNavigator from './src/navigators/AuthNavigator';
 import { StatusBar } from 'react-native';
 import MainNavigator from './src/navigators/MainNavigator';
-import   {useAsyncStorage}  from '@react-native-async-storage/async-storage';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 const App = () => {
   // Sử dụng useState để lưu thời gian 1.5 giây
   const [isShowSplash, setIsShowSplash] = useState(true);
   const [accessToken, setAccessToken] = useState('');
-  const {getItem, setItem} = useAsyncStorage('assetToken');
+  const { getItem, setItem } = useAsyncStorage('assetToken');
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -38,7 +38,7 @@ const App = () => {
         <SplashScreen />
       ) : (
         <NavigationContainer>
-          {accessToken ? <MainNavigator/>:<AuthNavigator />}
+          {accessToken ? <MainNavigator /> : <AuthNavigator />}
         </NavigationContainer>
       )}
     </>
