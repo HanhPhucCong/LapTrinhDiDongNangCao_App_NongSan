@@ -41,7 +41,7 @@ public class SecurityConfiguration {
     CorsConfiguration configuration = new CorsConfiguration();
 
     // Chỉ định domain frontend được phép gọi API
-    configuration.setAllowedOrigins(Arrays.asList("http://localhost:8083"));
+    configuration.setAllowedOrigins(Arrays.asList("*"));
 
     // Cho phép tất cả headers và methods
     configuration.setAllowedHeaders(Arrays.asList("*"));
@@ -57,9 +57,8 @@ public class SecurityConfiguration {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(AbstractHttpConfigurer::disable)
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             request ->
                 request

@@ -1,193 +1,168 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Sms, Lock, User } from 'iconsax-react-native';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Switch,
-} from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+    ContainerComponent,
+    SectionComponent,
+    SpaceComponent,
+    InputComponent,
+    ButtonComponent,
+    TextComponent,
+} from '../../components';
+import { appColors } from '../../constants/appColors';
+import { Validate } from '../../utils/validate';
+import authService from '../../service/api/authService';
+import { showMessage, hideMessage } from 'react-native-flash-message';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-type RootStackParamList = {
-  SignUpScreen: undefined;
-  SignIn: undefined;
+const SignupScreen = ({ navigation }: any) => {
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [isDisable, setIsDisable] = useState(true);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const emailValidation = Validate.email(email);
+        const passwordValidation = password === confirmPassword;
+
+        if (!fullName || !email || !password || !confirmPassword || !emailValidation || !passwordValidation) {
+            setIsDisable(true);
+        } else {
+            setIsDisable(false);
+        }
+    }, [fullName, email, password, confirmPassword]);
+
+    const handleSignup = async () => {
+        try {
+            setLoading(true);
+            const response: any = await authService.register(fullName, email, password, confirmPassword);
+            if (response && response.Data) {
+                const userId = response.Data.id || null;
+                navigation.navigate('OtpVerificationScreen', { email, userId });
+            }
+        } catch (error: any) {
+            //console.error('Error during signup:', error.response || error.message); // Log chi tiết lỗi
+            let errorMessage = 'Sign up failed!';
+
+            // Kiểm tra lỗi từ phản hồi của server
+            if (error.response && error.response.data) {
+                const { Message } = error.response.data;
+                if (Message) {
+                    errorMessage = Message;
+                }
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+
+            showMessage({
+                message: 'Sign up Failed',
+                description: errorMessage,
+                type: 'danger',
+                hideStatusBar: true,
+                position: 'top',
+                duration: 4000,
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <ContainerComponent isImageBackground isScroll>
+            <Spinner visible={loading} textContent={'Processing...'} textStyle={styles.spinnerTextStyle} />
+            <SectionComponent
+                styles={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: 75,
+                }}
+            >
+                <Image
+                    source={require('../../assets/images/text-logo.png')}
+                    style={{
+                        width: 250,
+                        height: 150,
+                        marginBottom: 15,
+                    }}
+                />
+            </SectionComponent>
+            <SectionComponent>
+                <TextComponent size={24} title text='Sign up' />
+                <SpaceComponent height={21} />
+
+                <InputComponent
+                    value={fullName}
+                    placeholder='Full Name'
+                    onChange={(val) => setFullName(val)}
+                    allowClear
+                    affix={<User size={22} color={appColors.gray} />}
+                />
+
+                <InputComponent
+                    value={email}
+                    placeholder='Email'
+                    onChange={(val) => setEmail(val)}
+                    allowClear
+                    affix={<Sms size={22} color={appColors.gray} />}
+                />
+                <InputComponent
+                    value={password}
+                    placeholder='Password'
+                    onChange={(val) => setPassword(val)}
+                    isPassword
+                    allowClear
+                    affix={<Lock size={22} color={appColors.gray} />}
+                />
+                <InputComponent
+                    value={confirmPassword}
+                    placeholder='Confirm Password'
+                    onChange={(val) => setConfirmPassword(val)}
+                    isPassword
+                    allowClear
+                    affix={<Lock size={22} color={appColors.gray} />}
+                />
+            </SectionComponent>
+            <SectionComponent>
+                <ButtonComponent
+                    text='SIGN UP'
+                    onPress={handleSignup}
+                    type='primary'
+                    disable={isDisable}
+                    color={isDisable ? appColors.gray : appColors.blueLink}
+                />
+            </SectionComponent>
+            <SectionComponent>
+                <View style={styles.buttonContainer}>
+                    <Text style={styles.normalText}>You already have an account?</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+                        <Text style={[styles.linkText, { marginLeft: 5 }]}>Sign in</Text>
+                    </TouchableOpacity>
+                </View>
+            </SectionComponent>
+        </ContainerComponent>
+    );
 };
 
-type Props = NativeStackScreenProps<RootStackParamList, "SignUpScreen">;
-
-export default function SignUpScreen({ navigation }: Props) {
-  const [isChecked, setIsChecked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSignUp = () => {
-    if (!isChecked) {
-      alert("Please agree to the Terms and Privacy Policy.");
-      return;
-    }
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      navigation.navigate("SignIn");
-    }, 2000);
-  };
-
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Sign Up</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
-          <Text style={styles.signInLink}>Sign In</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.title}>Create An Account</Text>
-      <Text style={styles.subtitle}>
-        Get started to begin enjoying unlimited access to exclusive project
-        management tools.
-      </Text>
-
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Full Name"
-          placeholderTextColor="#888"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#888"
-          keyboardType="email-address"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number"
-          placeholderTextColor="#888"
-          keyboardType="phone-pad"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#888"
-          secureTextEntry
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          placeholderTextColor="#888"
-          secureTextEntry
-        />
-      </View>
-
-      <View style={styles.checkboxContainer}>
-        <Switch
-          value={isChecked}
-          onValueChange={setIsChecked}
-          trackColor={{ true: "#4CAF50", false: "#DDD" }}
-          thumbColor={isChecked ? "#FFF" : "#FFF"}
-        />
-        <Text style={styles.checkboxText}>
-          By ticking this box, you agree to our
-          <Text style={styles.link}> Terms of Service</Text> and
-          <Text style={styles.link}> Privacy Policy</Text>
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        style={styles.signUpButton}
-        onPress={handleSignUp}
-        disabled={isLoading}
-      >
-        <Text style={styles.signUpButtonText}>
-          {isLoading ? "Signing Up..." : "Sign Up"}
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
-        <Text style={styles.bottomLink}>
-          Already have an account? <Text style={styles.link}>Sign In</Text>
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  signInLink: {
-    fontSize: 16,
-    color: "#4CAF50",
-    textDecorationLine: "underline",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#4CAF50",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#888",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-    fontSize: 16,
-    color: "#333",
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  checkboxText: {
-    fontSize: 14,
-    color: "#555",
-    flex: 1,
-    flexWrap: "wrap",
-  },
-  link: {
-    color: "#4CAF50",
-    textDecorationLine: "underline",
-  },
-  signUpButton: {
-    backgroundColor: "#4CAF50",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  signUpButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  bottomLink: {
-    textAlign: "center",
-    color: "#555",
-  },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    normalText: {
+        fontSize: 16,
+        color: appColors.grayTextBlur,
+    },
+    linkText: {
+        fontSize: 16,
+        color: appColors.blueLink,
+    },
+    spinnerTextStyle: {
+        color: '#FFF',
+        fontSize: 16,
+    },
 });
+
+export default SignupScreen;
