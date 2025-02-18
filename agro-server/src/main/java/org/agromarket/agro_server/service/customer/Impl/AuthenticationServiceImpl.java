@@ -86,7 +86,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   public VerifyResponse signup(SignupRequest signupRequest) {
     // kiểm tra xem email đã tồn tại chưa
     if (userRepository.existsByEmail(signupRequest.getEmail())) {
-      throw new CustomException("Existed Email!", HttpStatus.BAD_REQUEST.value());
+      throw new CustomException(
+          "Existed Email! Please enter another email", HttpStatus.BAD_REQUEST.value());
     }
 
     // check mật khẩu và xác nhận mật khẩu
