@@ -3,17 +3,25 @@ import React from 'react';
 import { LoginScreen } from '../screens';
 import OnboardingScreen from '../screens/auth/OnBoarding';
 import TabNavigator from './TabNavigator';
+import SignupScreen from '../screens/auth/SignupScreen';
+import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
+import ResetPasswordScreen from '../screens/auth/ResetPasswordScreen';
+import OtpVerificationScreen from '../screens/auth/OtpVerificationScreen';
 
 const AuthNavigator = () => {
-  const Stack = createNativeStackNavigator();
+    const Stack = createNativeStackNavigator();
 
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="OnboardingScreen" component={OnboardingScreen} />
-      <Stack.Screen name="LoginScreen" component={LoginScreen} />
-      <Stack.Screen name="Main" component={TabNavigator} />
-    </Stack.Navigator>
-  );
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name='OnboardingScreen' component={OnboardingScreen} />
+            <Stack.Screen name='LoginScreen' component={LoginScreen} />
+            <Stack.Screen name='SignupScreen' component={SignupScreen} />
+            <Stack.Screen name='ForgotPasswordScreen' component={ForgotPasswordScreen} />
+            <Stack.Screen name='ResetPasswordScreen' component={ResetPasswordScreen} />
+            <Stack.Screen name='OtpVerificationScreen' component={OtpVerificationScreen} />
+            <Stack.Screen name='Main' component={TabNavigator} />
+        </Stack.Navigator>
+    );
 };
 
 export default AuthNavigator;

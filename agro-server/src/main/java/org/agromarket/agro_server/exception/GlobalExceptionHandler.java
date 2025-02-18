@@ -1,7 +1,5 @@
 package org.agromarket.agro_server.exception;
 
-import java.util.HashMap;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.agromarket.agro_server.common.BaseResponse;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -59,12 +57,16 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
-    Map<String, String> errors = new HashMap<>();
-    ex.getBindingResult()
-        .getFieldErrors()
-        .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-    return ResponseEntity.badRequest().body(errors);
+  public ResponseEntity<BaseResponse> handleValidationException(
+      MethodArgumentNotValidException ex) {
+    String errorMessage =
+        ex.getBindingResult().getFieldErrors().stream()
+            .map(error -> error.getDefaultMessage()) // Lấy thông báo lỗi
+            .findFirst() // Chỉ lấy thông báo lỗi đầu tiên
+            .orElse("Validation failed. Please check the fields.");
+
+    BaseResponse response = new BaseResponse(errorMessage, HttpStatus.BAD_REQUEST.value(), null);
+    return ResponseEntity.badRequest().body(response);
   }
 
   @ExceptionHandler(NotFoundException.class)

@@ -5,44 +5,45 @@ import AuthNavigator from './src/navigators/AuthNavigator';
 import { StatusBar } from 'react-native';
 import MainNavigator from './src/navigators/MainNavigator';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import FlashMessage from 'react-native-flash-message';
+
 const App = () => {
-  // Sử dụng useState để lưu thời gian 1.5 giây
-  const [isShowSplash, setIsShowSplash] = useState(true);
-  const [accessToken, setAccessToken] = useState('');
-  const { getItem, setItem } = useAsyncStorage('assetToken');
+    // Sử dụng useState để lưu thời gian 1.5 giây
+    const [isShowSplash, setIsShowSplash] = useState(true);
+    const [accessToken, setAccessToken] = useState('');
+    const { getItem, setItem } = useAsyncStorage('assetToken');
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setIsShowSplash(false);
-    }, 1500);
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setIsShowSplash(false);
+        }, 1500);
 
-    return () => clearTimeout(timeout);
-  }, []);
+        return () => clearTimeout(timeout);
+    }, []);
 
-  useEffect(() => {
-    checkLogin();
-  }, []);
+    useEffect(() => {
+        checkLogin();
+    }, []);
 
-  // Hàm kiểm tra đăng nhập
-  const checkLogin = async () => {
-    const token = await getItem();
-    console.log(token);
-    // Kiểm tra token và lưu vào state
-    token && setAccessToken(token);
-  };
-  // Điều chỉnh thanh trạng thái
-  return (
-    <>
-      <StatusBar barStyle={'dark-content'} translucent backgroundColor={'transparent'} />
-      {isShowSplash ? (
-        <SplashScreen />
-      ) : (
-        <NavigationContainer>
-          {accessToken ? <MainNavigator /> : <AuthNavigator />}
-        </NavigationContainer>
-      )}
-    </>
-  );
+    // Hàm kiểm tra đăng nhập
+    const checkLogin = async () => {
+        const token = await getItem();
+        console.log(token);
+        // Kiểm tra token và lưu vào state
+        token && setAccessToken(token);
+    };
+    // Điều chỉnh thanh trạng thái
+    return (
+        <>
+            <StatusBar barStyle={'dark-content'} translucent backgroundColor={'transparent'} />
+            {isShowSplash ? (
+                <SplashScreen />
+            ) : (
+                <NavigationContainer>{accessToken ? <MainNavigator /> : <AuthNavigator />}</NavigationContainer>
+            )}
+            <FlashMessage position='top' />
+        </>
+    );
 };
 
 export default App;
