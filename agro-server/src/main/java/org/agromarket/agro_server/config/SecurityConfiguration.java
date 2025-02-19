@@ -41,7 +41,8 @@ public class SecurityConfiguration {
     CorsConfiguration configuration = new CorsConfiguration();
 
     // Chỉ định domain frontend được phép gọi API
-    configuration.setAllowedOrigins(Arrays.asList("*"));
+    configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+
 
     // Cho phép tất cả headers và methods
     configuration.setAllowedHeaders(Arrays.asList("*"));

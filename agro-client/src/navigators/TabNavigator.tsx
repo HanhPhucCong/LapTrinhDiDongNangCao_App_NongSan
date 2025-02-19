@@ -36,4 +36,5 @@ const TabNavigator = () => {
     );
 };
 
+
 export default TabNavigator;
