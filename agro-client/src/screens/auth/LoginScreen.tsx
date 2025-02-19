@@ -129,6 +129,14 @@ const LoginScreen = ({ navigation }: any) => {
                     </TouchableOpacity>
                 </View>
             </SectionComponent>
+            <SectionComponent>
+                <View style={styles.buttonContainer}>
+                    <Text style={styles.normalText}>Dang nhap ao truoc</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+                        <Text style={[styles.linkText, { marginLeft: 5 }]}>Vao</Text>
+                    </TouchableOpacity>
+                </View>
+            </SectionComponent>
         </ContainerComponent>
     );
 };
