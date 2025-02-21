@@ -20,9 +20,9 @@ const LoginScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isDisable, setIsDisable] = useState(true);
+
     useEffect(() => {
         const emailValidation = Validate.email(email);
-
         if (!email || !password || !emailValidation) {
             setIsDisable(true);
         } else {
@@ -33,12 +33,12 @@ const LoginScreen = ({ navigation }: any) => {
     const handleLogin = async () => {
         try {
             const response: any = await authService.login(email, password);
-
             if (!response) {
                 throw new Error(response.Message || 'Login failed');
             }
 
             await AsyncStorage.setItem('token', response.token);
+            await AsyncStorage.setItem('refreshToken', response.refreshToken);
             navigation.navigate('Main');
         } catch (error: any) {
             let errorMessage = 'Sign in failed!';

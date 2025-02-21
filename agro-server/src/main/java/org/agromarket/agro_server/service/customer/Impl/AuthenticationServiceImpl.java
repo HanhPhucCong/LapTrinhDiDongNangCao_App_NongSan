@@ -15,8 +15,12 @@ import org.agromarket.agro_server.model.dto.request.*;
 import org.agromarket.agro_server.model.dto.response.JwtAuthenticationResponse;
 import org.agromarket.agro_server.model.dto.response.UserResponse;
 import org.agromarket.agro_server.model.dto.response.VerifyResponse;
+import org.agromarket.agro_server.model.entity.BlackListRefreshToken;
+import org.agromarket.agro_server.model.entity.BlackListToken;
 import org.agromarket.agro_server.model.entity.User;
 import org.agromarket.agro_server.model.entity.Verify;
+import org.agromarket.agro_server.repositories.customer.BlackListRefreshTokenRepository;
+import org.agromarket.agro_server.repositories.customer.BlackListTokenRepository;
 import org.agromarket.agro_server.repositories.customer.UserRepository;
 import org.agromarket.agro_server.repositories.customer.VerifyRepository;
 import org.agromarket.agro_server.service.customer.AuthenticationService;
@@ -47,6 +51,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   private final UserMapper userMapper;
   private final UserService userService;
   private final VerifyRepository verifyRepository;
+  private final BlackListRefreshTokenRepository blackListRefreshTokenRepository;
+  private final BlackListTokenRepository blackListTokenRepository;
 
   private boolean checkMatchPassword(String password, String passwordConfirm) {
     if (!password.equals(passwordConfirm)) {
@@ -198,17 +204,28 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Override
   public JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
-    String userEmail = jwtService.extractUserName(refreshTokenRequest.getToken());
+    // check xem refreshToken này còn dùng được ko
+    String refreshToken = refreshTokenRequest.getToken();
+    BlackListRefreshToken blackListRefreshToken =
+        blackListRefreshTokenRepository.getByToken(refreshToken);
+    if (blackListRefreshToken != null && blackListRefreshToken.isRevoked()) {
+      log.error("Refresh token failed, refreshToken revoked!");
+      throw new CustomException("Refresh token has been revoked", HttpStatus.BAD_REQUEST.value());
+    }
+
+    String userEmail = jwtService.extractUserName(refreshToken);
     User user = userRepository.findByEmail(userEmail).orElseThrow();
-    if (jwtService.isTokenValid(refreshTokenRequest.getToken(), user)) {
+    if (jwtService.isTokenValid(refreshToken, user)) {
       var jwt = jwtService.generateToken(user);
 
       JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
       jwtAuthenticationResponse.setToken(jwt);
-      jwtAuthenticationResponse.setRefreshToken(refreshTokenRequest.getToken());
+      jwtAuthenticationResponse.setRefreshToken(refreshToken);
 
+      log.info("REFRESH TOKEN SUCCESSFULLY! {}", LocalDateTime.now());
       return jwtAuthenticationResponse;
     }
+    log.error("REFRESH TOKEN FAILED");
     return null;
   }
 
@@ -323,5 +340,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     log.info("Change password succesfully! UserId: " + user.getId());
 
     return userMapper.convertToResponse(user);
+  }
+
+  @Override
+  public void signout(SignoutRequest signoutRequest) {
+    BlackListToken blackListToken = new BlackListToken(signoutRequest.getToken(), true);
+    blackListTokenRepository.save(blackListToken);
+
+    BlackListRefreshToken blackListRefreshToken =
+        new BlackListRefreshToken(signoutRequest.getRefreshToken(), true);
+    blackListRefreshTokenRepository.save(blackListRefreshToken);
   }
 }

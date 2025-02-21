@@ -1,4 +1,4 @@
-package org.agromarket.agro_server.config;
+package org.agromarket.agro_server.config.mapper;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;

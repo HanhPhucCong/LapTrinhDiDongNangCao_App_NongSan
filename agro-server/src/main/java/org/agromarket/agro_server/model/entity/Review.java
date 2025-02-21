@@ -1,7 +1,6 @@
 package org.agromarket.agro_server.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,12 +25,9 @@ public class Review extends BaseEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
-  @DecimalMin(value = "1.0", inclusive = true, message = "Star rating must be at least {value}.")
-  @DecimalMax(value = "5.0", inclusive = true, message = "Star rating must be at most {value}.")
   @JoinColumn(nullable = false)
   private Double rating;
 
-  @Size(max = 255, message = "Comment must be less than or equal to 255 characters")
   @Column(length = 255)
   private String comment;
 }

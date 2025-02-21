@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.agromarket.agro_server.model.entity.BlackListToken;
+import org.agromarket.agro_server.repositories.customer.BlackListTokenRepository;
 import org.agromarket.agro_server.service.customer.JwtService;
 import org.agromarket.agro_server.service.customer.UserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,11 +25,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtService jwtServices;
   private final UserService userService;
+  private final BlackListTokenRepository blackListTokenRepository;
 
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
+
     final String authHeader = request.getHeader("Authorization");
     final String jwt;
     final String userEmail;
@@ -38,6 +42,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return;
     }
     jwt = authHeader.substring(7);
+
+    // check xem token co bi revoke (signout) ko
+    BlackListToken blackListToken = blackListTokenRepository.getByToken(jwt);
+    if (blackListToken != null && blackListToken.isRevoked()) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
     userEmail = jwtServices.extractUserName(jwt);
 
     if (StringUtils.isNotEmpty(userEmail)

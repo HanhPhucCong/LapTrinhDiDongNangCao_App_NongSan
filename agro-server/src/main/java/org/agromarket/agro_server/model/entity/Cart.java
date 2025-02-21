@@ -1,7 +1,6 @@
 package org.agromarket.agro_server.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +20,6 @@ public class Cart extends BaseEntity {
 
   @OneToOne
   @JoinColumn(name = "user_id", nullable = false, unique = true)
-  @NotNull(message = "User id cannot be null")
   private User user;
 
   @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)

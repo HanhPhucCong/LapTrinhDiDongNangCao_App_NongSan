@@ -8,6 +8,7 @@ import org.agromarket.agro_server.model.dto.response.VerifyResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface AuthenticationService {
+
   public void autoCreateAdminAccount();
 
   public VerifyResponse signup(SignupRequest signupRequest);
@@ -24,4 +25,6 @@ public interface AuthenticationService {
 
   // đổi mật khẩu
   public UserResponse renewPassword(long userId, RenewPasswordRequest renewPasswordRequest);
+
+  public void signout(SignoutRequest signoutRequest);
 }
