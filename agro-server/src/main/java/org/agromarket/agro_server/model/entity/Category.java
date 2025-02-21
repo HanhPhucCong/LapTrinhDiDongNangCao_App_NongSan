@@ -1,7 +1,6 @@
 package org.agromarket.agro_server.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +19,6 @@ public class Category extends BaseEntity {
   private long id;
 
   @Column(unique = true, nullable = false)
-  @NotNull(message = "Category name cannot be null")
   private String name;
 
   @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)

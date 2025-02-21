@@ -1,4 +1,12 @@
 import axiosClient from './axiosClient';
+import axios from 'axios';
+
+// tạo instance khác để dùng cho refresh token,
+// vì refreshToken dùng trong chính instance chính ko tự gọi được
+const axiosRefresh = axios.create({
+    baseURL: 'http://10.0.2.2:8083/api',
+    headers: { 'Content-Type': 'application/json' },
+});
 
 const authService = {
     login: (email: string, password: string) => {
@@ -15,6 +23,13 @@ const authService = {
     },
     resetPassword(password: string, comfirmPassword: string, resetPasswordCode: string, userId: string) {
         return axiosClient.patch(`/v1/auth/renew-password/${userId}`, { password, comfirmPassword, resetPasswordCode });
+    },
+    refreshToken(token: string) {
+        return axiosRefresh.post('/v1/auth/refresh', { token });
+    },
+    signout(signoutRequest: { token: string; refreshToken: string }) {
+        const url = '/v1/signout';
+        return axiosClient.post(url, signoutRequest);
     },
 };
 
