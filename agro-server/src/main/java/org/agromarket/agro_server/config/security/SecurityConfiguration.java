@@ -1,4 +1,4 @@
-package org.agromarket.agro_server.config;
+package org.agromarket.agro_server.config.security;
 
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,6 @@ public class SecurityConfiguration {
 
     // Chỉ định domain frontend được phép gọi API
     configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-
 
     // Cho phép tất cả headers và methods
     configuration.setAllowedHeaders(Arrays.asList("*"));

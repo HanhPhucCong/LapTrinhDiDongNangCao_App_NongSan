@@ -2,9 +2,6 @@ package org.agromarket.agro_server.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,13 +32,9 @@ public class LineItem extends BaseEntity {
 
   @ManyToOne
   @JoinColumn(name = "product_id", nullable = false)
-  @NotNull(message = "Product in LineItem cannot be null")
   private Product product;
 
   @Column(nullable = false)
-  @NotNull(message = "Quantity cannot be null")
-  @Min(value = 0, message = "Quantity must be equal/greater than 0")
-  @Max(value = 1000, message = "Quantity must be less than or equal to 1000")
   private int quantity;
 
   public double getPrice() {

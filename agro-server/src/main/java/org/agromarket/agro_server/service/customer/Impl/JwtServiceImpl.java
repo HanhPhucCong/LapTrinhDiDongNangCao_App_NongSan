@@ -24,7 +24,7 @@ public class JwtServiceImpl implements JwtService {
     return Jwts.builder()
         .subject(userDetails.getUsername())
         .issuedAt(new Date(System.currentTimeMillis()))
-        .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+        .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 30 phut
         .signWith(getSigninKey(), Jwts.SIG.HS256)
         .compact();
   }
@@ -35,7 +35,7 @@ public class JwtServiceImpl implements JwtService {
         .claims(extractClaims)
         .subject(userDetails.getUsername())
         .issuedAt(new Date(System.currentTimeMillis()))
-        .expiration(new Date(System.currentTimeMillis() + 604800000))
+        .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7 ngay
         .signWith(getSigninKey(), Jwts.SIG.HS256)
         .compact();
   }
