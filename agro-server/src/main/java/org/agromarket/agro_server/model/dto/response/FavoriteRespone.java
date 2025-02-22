@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class FavoriteRespone extends BaseResponseDTO {
   private long userId;
-  private List<ProductReponse> products;
+  private List<ProductResponse> products;
 }
