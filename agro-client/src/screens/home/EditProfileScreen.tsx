@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-
-const BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoYW5ocGh1Y29uZzI4MTIyMDAzQGdtYWlsLmNvbSIsImlhdCI6MTczOTk2MTI1MSwiZXhwIjoxNzM5OTYyNjkxfQ.hMLrZxjPZdruwdnCK7iizB7UEXlnWT7GX2anQaEFsv0';
+import profileService from '../../service/api/profileService';
 
 const EditProfileScreen = ({ route }: any) => {
     const navigation = useNavigation();
@@ -11,7 +10,7 @@ const EditProfileScreen = ({ route }: any) => {
 
     const [fullName, setFullName] = useState(userData.fullName);
     const [phoneNumber, setPhoneNumber] = useState(userData.phoneNumber || '');
-    const [rawPhoneNumber, setRawPhoneNumber] = useState<string>(''); 
+    const [rawPhoneNumber, setRawPhoneNumber] = useState<string>('');
     const [address, setAddress] = useState(userData.address || '');
     const [dateOfBirth, setDateOfBirth] = useState(userData.dateOfBirth?.split('T')[0] || '');
     const [newImageUri, setNewImageUri] = useState('');
@@ -82,23 +81,18 @@ const EditProfileScreen = ({ route }: any) => {
                     return;
                 }
             }
-            const response = await fetch('http://localhost:8083/api/user/update-profile', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${BEARER_TOKEN}`,
-                },
-                body: formData,
-            });
-
-            const result = await response.json();
+            const response = await profileService.updateProfile(formData);
             setLoading(false);
 
-            if (response.ok) {
+            if (response.success) {
                 Alert.alert('Thành công', 'Cập nhật thông tin thành công!');
+                console.log('Thành công', 'Cập nhật thông tin thành công!');
                 navigation.goBack();
             } else {
-                Alert.alert('Lỗi', result.message || 'Cập nhật không thành công');
+                Alert.alert('Lỗi', response.message || 'Cập nhật không thành công');
+                console.log('Lỗi', response.message || 'Cập nhật không thành công');
             }
+
         } catch (error) {
             setLoading(false);
             console.error('Lỗi khi cập nhật hồ sơ:', error);
@@ -136,9 +130,9 @@ const EditProfileScreen = ({ route }: any) => {
         if (/^\d{4}-\d{2}-\d{2}$/.test(formattedText)) {
             const [year, month, day] = formattedText.split('-').map(Number);
             const isValidDate = !isNaN(year) && !isNaN(month) && !isNaN(day) &&
-                                month >= 1 && month <= 12 &&
-                                day >= 1 && day <= 31;
-    
+                month >= 1 && month <= 12 &&
+                day >= 1 && day <= 31;
+
             if (!isValidDate) {
                 setDateErrorMessage('Định dạng không đúng (YYYY-MM-DD)');
             } else {
@@ -149,7 +143,7 @@ const EditProfileScreen = ({ route }: any) => {
         }
         setDateOfBirth(formattedText);
     };
-    
+
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={pickImage} style={styles.avatarContainer}>
