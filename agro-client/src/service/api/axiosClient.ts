@@ -5,7 +5,7 @@ import { resetToLogin } from '../../navigators/RootNavigation';
 
 // Tạo axios instance
 const axiosClient = axios.create({
-    baseURL: 'http://localhost:8083/api', // URL chạy trên simulator
+    baseURL: 'http://10.0.2.2:8083/api', // URL chạy trên simulator
     headers: {
         'Content-Type': 'application/json',
     },
