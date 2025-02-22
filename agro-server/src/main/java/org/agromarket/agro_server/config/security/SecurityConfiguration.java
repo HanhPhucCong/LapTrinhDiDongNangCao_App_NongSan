@@ -64,6 +64,8 @@ public class SecurityConfiguration {
                 request
                     .requestMatchers("/api/v1/auth/**")
                     .permitAll()
+                    .requestMatchers("/api/public/**")
+                    .permitAll()
                     .requestMatchers("/admin/**")
                     .permitAll() // Để tạm để khỏi xác nhận token cho admin
                     .anyRequest()
