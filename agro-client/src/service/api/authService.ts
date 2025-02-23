@@ -4,9 +4,14 @@ import axios from 'axios';
 // tạo instance khác để dùng cho refresh token,
 // vì refreshToken dùng trong chính instance chính ko tự gọi được
 const axiosRefresh = axios.create({
-    baseURL: 'http://10.0.2.2:8083',
+    baseURL: 'http://10.0.2.2:8083',  // URL chạy trên simulator
     headers: { 'Content-Type': 'application/json' },
 });
+
+// const axiosRefresh = axios.create({
+//     baseURL: 'http://localhost:8083/api', // URL chạy trên localhost
+//     headers: { 'Content-Type': 'application/json' },
+// });
 
 const authService = {
     login: (email: string, password: string) => {

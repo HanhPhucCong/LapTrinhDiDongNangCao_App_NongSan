@@ -1,8 +1,9 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image, ActivityIndicator, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-const API_URL = 'http://localhost:8083/api/user/my-profile';
-const BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoYW5ocGh1Y29uZzI4MTIyMDAzQGdtYWlsLmNvbSIsImlhdCI6MTczOTk2MTI1MSwiZXhwIjoxNzM5OTYyNjkxfQ.hMLrZxjPZdruwdnCK7iizB7UEXlnWT7GX2anQaEFsv0';
+import profileService from '../../service/api/profileService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 type User = {
   id: number;
@@ -22,22 +23,22 @@ type User = {
 const ProfileScreen = ({ navigation }: any) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [userData, setUserData] = useState<User | null>(null);
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    return { token, refreshToken };
+  };
 
-  const fetchUserData = () => {
+  const fetchUserData = async () => {
     setLoading(true);
-    fetch(API_URL, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${BEARER_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setUserData(data.Data);
-      })
-      .catch((error) => console.error('Error fetching user data:', error))
-      .finally(() => setLoading(false));
+    try {
+      const data = await profileService.getAllActive();
+      setUserData(data.Data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useFocusEffect(
