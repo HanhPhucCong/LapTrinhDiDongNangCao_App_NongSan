@@ -39,7 +39,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     response.setContentType("application/json;charset=UTF-8");
 
     // Trả về phản hồi chi tiết với mã lỗi và thông điệp
-    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.setContentType("application/json");
     response.getWriter().write(baseResponse.toJson());
   }
