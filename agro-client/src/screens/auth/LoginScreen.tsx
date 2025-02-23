@@ -91,7 +91,7 @@ const LoginScreen = ({ navigation }: any) => {
                 />
             </SectionComponent>
             <SectionComponent>
-                <TextComponent size={24} title text='Sign in' />
+                <TextComponent size={24} title text='Login' />
                 <SpaceComponent height={21} />
                 <InputComponent
                     value={email}
@@ -123,7 +123,7 @@ const LoginScreen = ({ navigation }: any) => {
             </SectionComponent>
             <SpaceComponent height={16} />
             <SectionComponent>
-                <ButtonComponent text='SIGN IN' onPress={handleLogin} color={appColors.blueLink} type='primary' />
+                <ButtonComponent text='LOGIN' onPress={handleLogin} color={appColors.blueLink} type='primary' />
             </SectionComponent>
             <SectionComponent>
                 <View style={styles.buttonContainer}>
@@ -133,14 +133,6 @@ const LoginScreen = ({ navigation }: any) => {
                     </TouchableOpacity>
                 </View>
             </SectionComponent>
-            {/* <SectionComponent>
-                <View style={styles.buttonContainer}>
-                    <Text style={styles.normalText}>Dang nhap ao truoc</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-                        <Text style={[styles.linkText, { marginLeft: 5 }]}>Vao</Text>
-                    </TouchableOpacity>
-                </View>
-            </SectionComponent> */}
         </ContainerComponent>
     );
 };

@@ -2,8 +2,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image, ActivityIndicator, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import profileService from '../../service/api/profileService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 
 type User = {
     id: number;
@@ -15,7 +13,7 @@ type User = {
     email: string;
     phoneNumber?: string | null;
     address?: string | null;
-    dateOfBirth?: string | null;
+    dateOfBirth?: string;
     avatarUrl?: string | null;
     role: string;
     isEmailVerified: boolean;
@@ -23,12 +21,6 @@ type User = {
 const ProfileScreen = ({ navigation }: any) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [userData, setUserData] = useState<User | null>(null);
-    const getToken = async () => {
-        const token = await AsyncStorage.getItem('token');
-        const refreshToken = await AsyncStorage.getItem('refreshToken');
-        return { token, refreshToken };
-    };
-
     const fetchUserData = async () => {
         setLoading(true);
         try {
@@ -46,6 +38,12 @@ const ProfileScreen = ({ navigation }: any) => {
             fetchUserData();
         }, [])
     );
+    const formatDate = (dateString?: string) => {
+        if (!dateString) return '';
+
+        const [year, month, day] = dateString.split('T')[0].split('-').map(Number);
+        return `${day}/${month}/${year}`;
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -63,16 +61,18 @@ const ProfileScreen = ({ navigation }: any) => {
                     <View style={styles.infoContainer}>
                         <InfoRow label='Số điện thoại' value={userData.phoneNumber || 'Chưa cập nhật'} />
                         <InfoRow label='Địa chỉ' value={userData.address || 'Chưa cập nhật'} />
-                        <InfoRow label='Ngày sinh' value={userData.dateOfBirth?.split('T')[0] || 'Chưa cập nhật'} />
+                        <InfoRow label='Ngày sinh' value={formatDate(userData.dateOfBirth) || 'Chưa cập nhật'} />
                         <InfoRow label='Đơn hàng đang vận chuyển' value={'Chưa có'} />
                         <InfoRow label='Lịch sử mua hàng' value={'Chưa có'} />
                     </View>
-                    <TouchableOpacity
-                        style={styles.editButton}
-                        onPress={() => navigation.navigate('EditProfile', { userData })}
-                    >
-                        <Text style={styles.editButtonText}>Chỉnh sửa hồ sơ</Text>
-                    </TouchableOpacity>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate('EditProfile', { userData })}>
+                            <Text style={styles.editButtonText} numberOfLines={1}>Sửa hồ sơ</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.changePasswordButton} onPress={() => navigation.navigate('ChangePassword', { userData })}>
+                            <Text style={styles.changePasswordText} numberOfLines={1}>Đổi mật khẩu</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             ) : (
                 <Text style={styles.errorText}>Không thể tải dữ liệu người dùng.</Text>
@@ -111,7 +111,49 @@ const styles = StyleSheet.create({
     infoLabel: { fontSize: 16, fontWeight: '500', color: '#444' },
     infoValue: { fontSize: 16, color: '#222' },
     errorText: { color: 'red', fontSize: 16, marginTop: 20 },
-    editButton: { backgroundColor: '#007bff', padding: 10, borderRadius: 8, marginTop: 20 },
-    editButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 10, // Khoảng cách giữa hai button
+        marginTop: 15,
+    },
+
+    editButton: {
+        backgroundColor: '#007bff',
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        borderRadius: 6,
+        flex: 1, // Chia đều kích thước giữa hai button
+        alignItems: 'center',
+        justifyContent: 'center',
+        minWidth: 120, // Đảm bảo đủ chỗ để text không xuống hàng
+    },
+
+    editButtonText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: '600',
+        textAlign: 'center',
+        flexShrink: 1, // Ngăn text bị ép xuống dòng
+    },
+
+    changePasswordButton: {
+        backgroundColor: '#28a745',
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        borderRadius: 6,
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        minWidth: 120, // Đảm bảo đủ rộng để tránh text xuống hàng
+    },
+
+    changePasswordText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: '600',
+        textAlign: 'center',
+        flexShrink: 1, // Ngăn text bị ép xuống dòng
+    },
 });
 export default ProfileScreen;
