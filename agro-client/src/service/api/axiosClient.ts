@@ -5,7 +5,7 @@ import { resetToLogin } from '../../navigators/RootNavigation';
 
 // Tạo axios instance
 const axiosClient = axios.create({
-    baseURL: 'http://10.0.2.2:8083/api', // URL chạy trên simulator
+    baseURL: 'http://10.0.2.2:8083', // URL chạy trên simulator
     headers: {
         'Content-Type': 'application/json',
     },
@@ -43,8 +43,7 @@ const refreshAccessToken = async () => {
         return newAccessToken;
     } catch (error) {
         console.log('❌ Refresh token thất bại:', error);
-        await AsyncStorage.removeItem('token');
-        await AsyncStorage.removeItem('refreshToken');
+        await AsyncStorage.clear();
         resetToLogin();
         return null;
     } finally {

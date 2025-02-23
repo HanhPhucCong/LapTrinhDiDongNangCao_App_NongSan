@@ -25,7 +25,9 @@ const App = () => {
 
     const checkLogin = async () => {
         try {
+            //await AsyncStorage.clear();
             const token = await AsyncStorage.getItem('token');
+            console.log('check current token: ', token);
             if (token) {
                 setAccessToken(token);
             }
