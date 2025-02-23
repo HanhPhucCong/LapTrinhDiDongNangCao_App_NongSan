@@ -3,21 +3,66 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, Acti
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import profileService from '../../service/api/profileService';
-
+const formatDateToInput = (isoDate: string) => {
+    if (!isoDate) return '';
+    const [year, month, day] = isoDate.split('T')[0].split('-').map(Number);
+    return `${day}/${month}/${year}`;
+};
 const EditProfileScreen = ({ route }: any) => {
     const navigation = useNavigation();
     const { userData } = route.params;
 
     const [fullName, setFullName] = useState(userData.fullName);
     const [phoneNumber, setPhoneNumber] = useState(userData.phoneNumber || '');
-    const [rawPhoneNumber, setRawPhoneNumber] = useState<string>('');
     const [address, setAddress] = useState(userData.address || '');
-    const [dateOfBirth, setDateOfBirth] = useState(userData.dateOfBirth?.split('T')[0] || '');
+    const [dateOfBirth, setDateOfBirth] = useState(() => {
+        return userData.dateOfBirth ? formatDateToInput(userData.dateOfBirth) : '';
+    });
     const [newImageUri, setNewImageUri] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [dateErrorMessage, setDateErrorMessage] = useState('');
+    const formatDateForAPI = (dateString: string) => {
+        const [day, month, year] = dateString.split('/').map(Number);
+        return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T00:00:00`;
+    };
+    const isValidDate = (day: number, month: number, year: number) => {
+        const date = new Date(year, month - 1, day);
+        return (
+            date.getFullYear() === year &&
+            date.getMonth() === month - 1 &&
+            date.getDate() === day
+        );
+    };
+    const handleDateChange = (text: string) => {
+        let formattedText = text.replace(/[^0-9/]/g, '');
 
+        if (formattedText.length > 10) {
+            setDateErrorMessage('Ngày sinh không hợp lệ');
+            return;
+        }
+
+        const parts = formattedText.split('/').map(Number);
+
+        if (parts.length === 3) {
+            let [day, month, year] = parts;
+
+            const dayStr = day.toString().padStart(2, '0');
+            const monthStr = month.toString().padStart(2, '0');
+            const formattedDate = `${dayStr}/${monthStr}/${year}`;
+
+            setDateOfBirth(formattedDate);
+
+            if (isValidDate(day, month, year)) {
+                setDateErrorMessage('');
+            } else {
+                setDateErrorMessage('Ngày không tồn tại');
+            }
+        } else {
+            setDateOfBirth(formattedText);
+            setDateErrorMessage('Định dạng không đúng (DD/MM/YYYY)');
+        }
+    };
     const handleSave = async () => {
         setLoading(true);
         try {
@@ -26,7 +71,7 @@ const EditProfileScreen = ({ route }: any) => {
                 fullName,
                 phoneNumber: phoneNumber.toString(),
                 address,
-                dateOfBirth: `${dateOfBirth}T00:00:00`,
+                dateOfBirth: formatDateForAPI(dateOfBirth),
                 avatarUrl: userData.avatarUrl
             })], { type: 'application/json' }));
             if (newImageUri) {
@@ -114,36 +159,12 @@ const EditProfileScreen = ({ route }: any) => {
     const handlePhoneChange = (text: string) => {
         const formattedText = text.replace(/[^0-9]/g, '');
         if (formattedText.length > 10) {
-            setErrorMessage('Số điện thoại không hợp lệ (YYYY-MM-DD)');
+            setErrorMessage('Số điện thoại không hợp lệ');
         } else {
             setErrorMessage('');
         }
         setPhoneNumber(formattedText);
     };
-    const handleDateChange = (text: string) => {
-        let formattedText = text.replace(/[^0-9-]/g, '');
-        if (formattedText.length > 10) {
-            setDateErrorMessage('Ngày sinh không hợp lệ');
-        } else {
-            setDateErrorMessage('');
-        }
-        if (/^\d{4}-\d{2}-\d{2}$/.test(formattedText)) {
-            const [year, month, day] = formattedText.split('-').map(Number);
-            const isValidDate = !isNaN(year) && !isNaN(month) && !isNaN(day) &&
-                month >= 1 && month <= 12 &&
-                day >= 1 && day <= 31;
-
-            if (!isValidDate) {
-                setDateErrorMessage('Định dạng không đúng (YYYY-MM-DD)');
-            } else {
-                setDateErrorMessage('');
-            }
-        } else if (formattedText.length === 10) {
-            setDateErrorMessage('Định dạng không đúng (YYYY-MM-DD)');
-        }
-        setDateOfBirth(formattedText);
-    };
-
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={pickImage} style={styles.avatarContainer}>
@@ -172,7 +193,7 @@ const EditProfileScreen = ({ route }: any) => {
                 style={styles.input}
                 value={dateOfBirth}
                 onChangeText={handleDateChange}
-                placeholder="YYYY-MM-DD"
+                placeholder="DD/MM/YYYY"
                 keyboardType="numeric"
             />
             {dateErrorMessage ? <Text style={styles.errorText}>{dateErrorMessage}</Text> : null}

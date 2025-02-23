@@ -4,7 +4,7 @@ import TabNavigator from './TabNavigator';
 import EditProfileScreen from '../screens/home/EditProfileScreen';
 import ProductDetailScreen from '../screens/home/ProductDetailScreen';
 import { LoginScreen } from '../screens';
-
+import ChangePasswordScreen from '../screens/home/ChangePasswordScreen';
 const Stack = createNativeStackNavigator();
 
 const MainNavigator = () => {
@@ -13,6 +13,7 @@ const MainNavigator = () => {
             {/* đăng nhập xong mới vào đây -> đăng nhập xong mới dùng được các dưới đây */}
             <Stack.Screen name='Main' component={TabNavigator} />
             <Stack.Screen name='EditProfile' component={EditProfileScreen} />
+            <Stack.Screen name='ChangePassword' component={ChangePasswordScreen} />
             <Stack.Screen name='ProductDetailScreen' component={ProductDetailScreen} />
             <Stack.Screen name='LoginScreen' component={LoginScreen} />
         </Stack.Navigator>

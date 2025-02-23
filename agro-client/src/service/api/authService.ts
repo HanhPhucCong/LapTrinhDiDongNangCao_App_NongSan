@@ -8,11 +8,6 @@ const axiosRefresh = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
-// const axiosRefresh = axios.create({
-//     baseURL: 'http://localhost:8083/api', // URL chạy trên localhost
-//     headers: { 'Content-Type': 'application/json' },
-// });
-
 const authService = {
     login: (email: string, password: string) => {
         return axiosClient.post('/api/v1/auth/signin', { email, password });
