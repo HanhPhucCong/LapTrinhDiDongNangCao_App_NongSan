@@ -38,8 +38,8 @@ const SignupScreen = ({ navigation }: any) => {
         try {
             setLoading(true);
             const response: any = await authService.register(fullName, email, password, confirmPassword);
-            if (response && response.Data) {
-                const userId = response.Data.id || null;
+            if (response && response.data) {
+                const userId = response.data.id || null;
                 navigation.navigate('OtpVerificationScreen', { email, userId });
             }
         } catch (error: any) {

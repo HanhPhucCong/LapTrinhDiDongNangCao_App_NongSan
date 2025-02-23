@@ -45,7 +45,7 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
                     position: 'top',
                     duration: 4000,
                 });
-                const userId = getVerifyResponse.Data.id;
+                const userId = getVerifyResponse.data.id;
                 navigation.navigate('ResetPasswordScreen', { email, userId });
             }
         } catch (error: any) {

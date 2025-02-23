@@ -33,8 +33,9 @@ const LoginScreen = ({ navigation }: any) => {
     const handleLogin = async () => {
         try {
             const response: any = await authService.login(email, password);
+
             if (!response) {
-                throw new Error(response.Message || 'Login failed');
+                throw new Error(response?.message || 'Login failed');
             }
 
             await AsyncStorage.setItem('token', response.token);
@@ -43,11 +44,14 @@ const LoginScreen = ({ navigation }: any) => {
         } catch (error: any) {
             let errorMessage = 'Sign in failed!';
 
+            // Kiểm tra và log lỗi để debug
             if (error.response && error.response.data) {
-                const { Message, Status } = error.response.data;
+                //console.log('check 88:', error.response.data.message);
 
-                if (Status === 401) {
-                    errorMessage = Message || 'Incorrect email or password!';
+                const { message, status } = error.response.data;
+
+                if (status === 401) {
+                    errorMessage = message || 'Incorrect email or password!';
                 } else {
                     errorMessage = 'Something went wrong. Please try again!';
                 }
@@ -64,7 +68,7 @@ const LoginScreen = ({ navigation }: any) => {
                 duration: 4000,
             });
 
-            console.log('Error:', error);
+            //console.error('Login Error:', error);
         }
     };
 
@@ -129,14 +133,14 @@ const LoginScreen = ({ navigation }: any) => {
                     </TouchableOpacity>
                 </View>
             </SectionComponent>
-            <SectionComponent>
+            {/* <SectionComponent>
                 <View style={styles.buttonContainer}>
                     <Text style={styles.normalText}>Dang nhap ao truoc</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Main')}>
                         <Text style={[styles.linkText, { marginLeft: 5 }]}>Vao</Text>
                     </TouchableOpacity>
                 </View>
-            </SectionComponent>
+            </SectionComponent> */}
         </ContainerComponent>
     );
 };

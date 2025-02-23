@@ -5,13 +5,16 @@ import { resetToLogin } from '../../navigators/RootNavigation';
 
 // Tạo axios instance
 const axiosClient = axios.create({
+<<<<<<< HEAD
     baseURL: 'http://10.0.2.2:8083/api', // URL chạy trên simulator
+=======
+    baseURL: 'http://10.0.2.2:8083', // URL chạy trên simulator
+>>>>>>> 7f0551f9dbc41b9356fec61d5bca0a703aca1864
     headers: {
         'Content-Type': 'application/json',
     },
     timeout: 10000,
 });
-
 
 // Biến kiểm soát refresh token để tránh gọi nhiều lần cùng lúc
 let isRefreshing = false;
@@ -44,8 +47,7 @@ const refreshAccessToken = async () => {
         return newAccessToken;
     } catch (error) {
         console.log('❌ Refresh token thất bại:', error);
-        await AsyncStorage.removeItem('token');
-        await AsyncStorage.removeItem('refreshToken');
+        await AsyncStorage.clear();
         resetToLogin();
         return null;
     } finally {

@@ -2,22 +2,23 @@ import React from 'react';
 import { View, Text, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { CommonActions } from '@react-navigation/native';
 import reviewService from '../../service/api/reviewService';
 import authService from '../../service/api/authService';
 import { SpaceComponent } from '../../components';
+import productService from '../../service/api/productService';
 
-const CartScreen = () => {
-    const navigation = useNavigation();
-
+const CartScreen = ({ navigation }: any) => {
     const handleGetReview = () => {
         fetchReviews();
     };
 
     const fetchReviews = async () => {
         try {
-            const response = await reviewService.getAllActive();
-            console.log('test call api,check reviews: ', response);
+            // const response = await reviewService.getAllActive();
+            // console.log('test call api,check reviews: ', response);
+
+            const response = await productService.getAllActive();
+            console.log('test call api,check reviews: ', response.data.totalElements);
         } catch (err) {
             console.error('loi khi fetch review: ', err);
         }
@@ -37,12 +38,7 @@ const CartScreen = () => {
 
             await AsyncStorage.clear();
 
-            navigation.dispatch(
-                CommonActions.reset({
-                    index: 0,
-                    routes: [{ name: 'LoginScreen' }],
-                })
-            );
+            navigation.navigate('LoginScreen');
         } catch (err) {
             console.error('Signout failed: ', err);
         }
