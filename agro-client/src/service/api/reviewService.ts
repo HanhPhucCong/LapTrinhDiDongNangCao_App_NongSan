@@ -2,7 +2,7 @@ import axiosClient from './axiosClient';
 
 const reviewService = {
     getAllActive() {
-        const url = '/review/get-all-active/1';
+        const url = '/api/review/get-all-active/2';
         return axiosClient.get(url);
     },
 };
