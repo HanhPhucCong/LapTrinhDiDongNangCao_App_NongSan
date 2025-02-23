@@ -27,7 +27,7 @@ const OtpVerificationScreen = ({ navigation, route }: any) => {
             setLoading(true);
             Keyboard.dismiss();
             const verifyResponse: any = await authService.verify(otp, userId);
-            if (verifyResponse && verifyResponse.Data) {
+            if (verifyResponse && verifyResponse.data) {
                 showMessage({
                     message: 'Verify account successfully!',
                     description: verifyResponse.Message,

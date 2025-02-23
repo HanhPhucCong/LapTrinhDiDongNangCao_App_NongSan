@@ -2,12 +2,12 @@ import axiosClient from './axiosClient';
 
 const profileService = {
     getAllActive() {
-        const url = '/user/my-profile';
+        const url = '/api/user/my-profile';
         return axiosClient.get(url);
     },
     async updateProfile(formData: FormData) {
         try {
-            const response = await axiosClient.put('/user/update-profile', formData, {
+            const response = await axiosClient.put('/api/user/update-profile', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
