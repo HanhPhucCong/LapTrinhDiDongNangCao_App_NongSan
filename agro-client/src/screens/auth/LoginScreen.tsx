@@ -35,7 +35,7 @@ const LoginScreen = ({ navigation }: any) => {
             const response: any = await authService.login(email, password);
 
             if (!response) {
-                throw new Error(response?.Message || 'Login failed');
+                throw new Error(response?.message || 'Login failed');
             }
 
             await AsyncStorage.setItem('token', response.token);
