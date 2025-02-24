@@ -40,10 +40,10 @@ const ResetPasswordScreen = ({ route, navigation }: any) => {
                 otp,
                 userId
             );
-            if (resetPasswordResponse && resetPasswordResponse.Message) {
+            if (resetPasswordResponse && resetPasswordResponse.message) {
                 showMessage({
                     message: 'Reset Password successfully!',
-                    description: resetPasswordResponse.Message,
+                    description: resetPasswordResponse.message,
                     type: 'success',
                     hideStatusBar: true,
                     position: 'top',
@@ -83,10 +83,10 @@ const ResetPasswordScreen = ({ route, navigation }: any) => {
             setLoading(true);
             Keyboard.dismiss();
             const getVerifyResponse: any = await authService.getVerify(email);
-            if (getVerifyResponse && getVerifyResponse.Message) {
+            if (getVerifyResponse && getVerifyResponse.message) {
                 showMessage({
                     message: 'Get verify successfully!',
-                    description: getVerifyResponse.Message,
+                    description: getVerifyResponse.message,
                     type: 'success',
                     hideStatusBar: true,
                     position: 'top',

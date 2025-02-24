@@ -6,6 +6,10 @@ import ProductDetailScreen from '../screens/home/ProductDetailScreen';
 import { LoginScreen } from '../screens';
 import ChangePasswordScreen from '../screens/home/ChangePasswordScreen';
 const Stack = createNativeStackNavigator();
+import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
+import ResetPasswordScreen from '../screens/auth/ResetPasswordScreen';
+import OtpVerificationScreen from '../screens/auth/OtpVerificationScreen';
+import SignupScreen from '../screens/auth/SignupScreen';
 
 const MainNavigator = () => {
     return (
@@ -16,6 +20,10 @@ const MainNavigator = () => {
             <Stack.Screen name='ChangePassword' component={ChangePasswordScreen} />
             <Stack.Screen name='ProductDetailScreen' component={ProductDetailScreen} />
             <Stack.Screen name='LoginScreen' component={LoginScreen} />
+            <Stack.Screen name='SignupScreen' component={SignupScreen} />
+            <Stack.Screen name='ForgotPasswordScreen' component={ForgotPasswordScreen} />
+            <Stack.Screen name='ResetPasswordScreen' component={ResetPasswordScreen} />
+            <Stack.Screen name='OtpVerificationScreen' component={OtpVerificationScreen} />
         </Stack.Navigator>
     );
 };
