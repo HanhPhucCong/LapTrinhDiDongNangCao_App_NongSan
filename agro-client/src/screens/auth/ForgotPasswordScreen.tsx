@@ -36,10 +36,10 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
             setLoading(true);
             Keyboard.dismiss();
             const getVerifyResponse: any = await authService.getVerify(email);
-            if (getVerifyResponse && getVerifyResponse.Message) {
+            if (getVerifyResponse && getVerifyResponse.message) {
                 showMessage({
                     message: 'Get verify successfully!',
-                    description: getVerifyResponse.Message,
+                    description: getVerifyResponse.message,
                     type: 'success',
                     hideStatusBar: true,
                     position: 'top',
@@ -54,9 +54,9 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
 
             // Kiểm tra lỗi từ phản hồi của server
             if (error.response && error.response.data) {
-                const { Message } = error.response.data;
-                if (Message) {
-                    errorMessage = Message;
+                const { message } = error.response.data;
+                if (message) {
+                    errorMessage = message;
                 }
             } else if (error.message) {
                 errorMessage = error.message;

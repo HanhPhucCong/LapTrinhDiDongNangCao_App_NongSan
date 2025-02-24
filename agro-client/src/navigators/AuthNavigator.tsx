@@ -9,6 +9,7 @@ import ResetPasswordScreen from '../screens/auth/ResetPasswordScreen';
 import OtpVerificationScreen from '../screens/auth/OtpVerificationScreen';
 import EditProfileScreen from '../screens/home/EditProfileScreen';
 import ProductDetailScreen from '../screens/home/ProductDetailScreen';
+import ChangePasswordScreen from '../screens/home/ChangePasswordScreen';
 
 const AuthNavigator = () => {
     const Stack = createNativeStackNavigator();
@@ -24,6 +25,7 @@ const AuthNavigator = () => {
             <Stack.Screen name='Main' component={TabNavigator} />
             <Stack.Screen name='EditProfile' component={EditProfileScreen} />
             <Stack.Screen name='ProductDetailScreen' component={ProductDetailScreen} />
+            <Stack.Screen name='ChangePassword' component={ChangePasswordScreen} />
         </Stack.Navigator>
     );
 };
