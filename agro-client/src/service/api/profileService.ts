@@ -14,6 +14,7 @@ const profileService = {
             });
             return { success: true, data: response };
         } catch (error: any) {
+            console.log(e)
             return { success: false, message: error.response?.data?.message || 'Cập nhật không thành công' };
         }
     },

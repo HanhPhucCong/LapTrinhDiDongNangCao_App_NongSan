@@ -7,7 +7,6 @@ import passwordService from '../../service/api/passwordService';
 const ChangePasswordScreen = ({ route }: any) => {
     const navigation = useNavigation();
     const { userData } = route.params;
-    const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [otp, setOtp] = useState('');
@@ -25,7 +24,7 @@ const ChangePasswordScreen = ({ route }: any) => {
 
     const isPasswordValid = newPassword.length >= 6;
     const isConfirmValid = newPassword === confirmPassword;
-    const isFormValid = oldPassword && isPasswordValid && isConfirmValid && otp;
+    const isFormValid = isPasswordValid && isConfirmValid && otp;
 
     const handleSendOtp = async () => {
         const email = userData.email;
@@ -61,8 +60,8 @@ const ChangePasswordScreen = ({ route }: any) => {
         }
     
         const userId = userData.id;
-        const response = await passwordService.changePassword(userId, newPassword, confirmPassword, otp);
-    
+        const response = await passwordService.changePassword(userId, confirmPassword, otp);
+
         if (response.success) {
             Alert.alert('Thành công', 'Mật khẩu đã được thay đổi.');
             navigation.goBack();
@@ -79,24 +78,6 @@ const ChangePasswordScreen = ({ route }: any) => {
 
             <Text style={styles.title}>Đổi Mật Khẩu</Text>
 
-            {/* Ô nhập mật khẩu cũ */}
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Nhập mật khẩu cũ"
-                    secureTextEntry={!showPasswords.old}
-                    value={oldPassword}
-                    onChangeText={setOldPassword}
-                />
-                <TouchableOpacity onPress={() => toggleShowPassword('old')}>
-                    <Ionicons
-                        name={showPasswords.old ? 'eye' : 'eye-off'}
-                        size={24}
-                        color="gray"
-                        style={styles.eyeIcon}
-                    />
-                </TouchableOpacity>
-            </View>
 
             {/* Ô nhập mật khẩu mới */}
             <View style={styles.inputContainer}>

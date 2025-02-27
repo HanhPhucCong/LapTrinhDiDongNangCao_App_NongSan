@@ -10,15 +10,16 @@ const passwordService = {
         }
     },
 
-    async changePassword(userId: string, password: string, confirmPassword: string, resetPasswordCode: string) {
+    async changePassword(userId: string, confirmPassword: string, resetPasswordCode: string) {
         try {
-            const response = await axiosClient.post(`/api/v1/auth/renew-password/${userId}`, {
-                password,
+            const response = await axiosClient.patch(`/api/v1/auth/renew-password/${userId}`, {
+                password: confirmPassword,
                 comfirmPassword: confirmPassword,
                 resetPasswordCode
             });
             return { success: true, data: response.data };
         } catch (error: any) {
+            console.log(error)
             return { success: false, message: error.response?.data?.message || 'Đổi mật khẩu thất bại' };
         }
     }
