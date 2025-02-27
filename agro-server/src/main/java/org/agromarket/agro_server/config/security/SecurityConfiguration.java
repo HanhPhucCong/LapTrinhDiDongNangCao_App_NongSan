@@ -45,7 +45,7 @@ public class SecurityConfiguration {
 
     // Cho phép tất cả headers và methods
     configuration.setAllowedHeaders(Arrays.asList("*"));
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 
     // Cho phép gửi credentials như Cookie, Authorization token
     configuration.setAllowCredentials(true);
