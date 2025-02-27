@@ -1,5 +1,4 @@
 import axiosClient from './axiosClient';
-
 const profileService = {
     getAllActive() {
         const url = '/api/user/my-profile';
@@ -14,7 +13,7 @@ const profileService = {
             });
             return { success: true, data: response };
         } catch (error: any) {
-            console.log(e)
+            console.log(error)
             return { success: false, message: error.response?.data?.message || 'Cập nhật không thành công' };
         }
     },
